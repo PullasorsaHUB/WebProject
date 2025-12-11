@@ -71,3 +71,9 @@ export default defineConfig([
   },
 ])
 ```
+
+## Prisma commands
+
+"npx tsx prisma/script.ts" for running seed.
+"npx prisma studio --config ./prisma.config.ts" for running prisma studio.
+"npx prisma generate"
