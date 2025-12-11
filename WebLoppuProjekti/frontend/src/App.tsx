@@ -1,28 +1,35 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
+import { RecipeListPage } from "./pages/RecipeListPage";
+import { RecipeDetailPage } from "./pages/RecipeDetailPage";
+import { RecipeCreatePage } from "./pages/RecipeCreatePage";
+import { RecipeEditPage } from "./pages/RecipeEditPage";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { FavoritesPage } from "./pages/FavoritesPage";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-
+    <BrowserRouter>
+      <div className="min-h-screen bg-base-100">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<RecipeListPage />} />
+          <Route path="/recipes/new" element={<RecipeCreatePage />} />
+          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+          <Route path="/recipes/:id/edit" element={<RecipeEditPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="*" element={
+            <div className="container mx-auto px-4 py-8">
+              <div className="alert alert-warning">
+                <span>Sivua ei löydy</span>
+              </div>
+            </div>
+          } />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </BrowserRouter>
+  );
 }
-
-export default App
