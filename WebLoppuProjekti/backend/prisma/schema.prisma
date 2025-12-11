@@ -4,6 +4,16 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+model Recipe {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String?
+  ingredients  String
+  instructions String
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+}
+
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
