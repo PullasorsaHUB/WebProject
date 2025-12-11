@@ -5,6 +5,10 @@ dist-ssr/
 .vite/
 *.local
 
+# Backend-specific
+.env
+/generated/prisma
+
 # Logs
 *.log
 npm-debug.log*
