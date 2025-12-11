@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",          // käytetään CommonJS-moduuleja
+    "moduleResolution": "node",    // normaali node-resoluutio
+    "rootDir": ".",            // TS-lähdekoodi
+    "outDir": "./dist",            // käännetty JS (jos joskus ajat tsc:n)
+    "strict": true,
+    "esModuleInterop": true,       // sallii `import express from "express"`
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
