@@ -5,13 +5,34 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 model Recipe {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String?
-  ingredients  String
-  instructions String
-  imageUrl     String?
-  createdAt    DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  ingredients   String
+  instructions  String
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  favorites     Favorite[]
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  userName      String?
+  passwordHash  String
+  email         String    @unique
+  createdAt     DateTime @default(now())
+  favorites     Favorite[]
+}
+
+model Favorite {
+  id            Int     @id @default(autoincrement())
+  userId        Int
+  recipeId      Int
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe        Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, recipeId])
 }
 
 generator client {
