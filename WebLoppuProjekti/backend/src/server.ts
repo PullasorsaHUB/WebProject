@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import swaggerUI from 'swagger-ui-express'; // Swagger UI
 import { swaggerSpec } from './swagger'; // Swaggerin konfiguraatio
 import recipesRouter from './routes/recipes'; // Reseptireitit
+import authRoutes from "./routes/authRoutes"; // Auth-reitit
 
 
 // Lataa .env-tiedoston ympäristömmuutujat prosessiin
@@ -20,6 +21,9 @@ app.use(cors());    // sallii pyynnöt esim. frontendistä
 
 // Ota JSON-bodyjen käsittely käyttöön
 app.use(express.json());
+
+// Auth-reitit
+app.use("/api/auth", authRoutes);
 
 // Health check reitti
 app.get('/health', (req: Request, res: Response) => {
