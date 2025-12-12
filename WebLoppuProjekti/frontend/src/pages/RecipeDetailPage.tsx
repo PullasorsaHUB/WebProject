@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { recipeApi, type Recipe } from "../api/recipes";
-
+import { recipeApi, type Recipe } from "../api/recipes";import { FavoriteButton } from "../components/FavoriteButton";
+import { useFavorites } from "../hooks/useFavorites";
 export function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -102,8 +103,14 @@ export function RecipeDetailPage() {
 
         <div className="flex-1">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-3xl font-bold">{recipe.title}</h1>
-            <div className="flex gap-2">
+            <h1 className="text-3xl font-bold flex-1">{recipe.title}</h1>
+            <div className="flex gap-2 items-center">
+              <FavoriteButton
+                recipeId={recipe.id}
+                isFavorite={isFavorite(recipe.id)}
+                onToggle={toggleFavorite}
+                size="md"
+              />
               <Link
                 to={`/recipes/${recipe.id}/edit`}
                 className="btn btn-outline btn-sm"
