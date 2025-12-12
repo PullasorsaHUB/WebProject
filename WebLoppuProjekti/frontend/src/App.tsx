@@ -8,11 +8,13 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { FavoritesPage } from "./pages/FavoritesPage";
 import { AuthProvider } from "./auth/AuthContext";
+import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { PrivateRoute } from "./auth/PrivateRoute";
 
 export default function App() {
   return (
     <AuthProvider>
+      <FavoritesProvider>
       <BrowserRouter>
         <div className="min-h-screen bg-base-100">
           <Navbar />
@@ -46,6 +48,7 @@ export default function App() {
         </Routes>
       </div>
     </BrowserRouter>
+      </FavoritesProvider>
     </AuthProvider>
   );
 }

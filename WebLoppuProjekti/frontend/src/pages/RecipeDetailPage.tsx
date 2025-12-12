@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { recipeApi, type Recipe } from "../api/recipes";import { FavoriteButton } from "../components/FavoriteButton";
-import { useFavorites } from "../hooks/useFavorites";
+import { recipeApi, type Recipe } from "../api/recipes";
+import { FavoriteButton } from "../components/FavoriteButton";
+import { useFavorites } from "../contexts/FavoritesContext";
+import { useAuth } from "../auth/AuthContext";
 export function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isLoggedIn } = useAuth();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -108,7 +111,13 @@ export function RecipeDetailPage() {
               <FavoriteButton
                 recipeId={recipe.id}
                 isFavorite={isFavorite(recipe.id)}
-                onToggle={toggleFavorite}
+                onToggle={(recipeId) => {
+                  if (!isLoggedIn) {
+                    navigate("/login");
+                    return;
+                  }
+                  toggleFavorite(recipeId);
+                }}
                 size="md"
               />
               <Link
