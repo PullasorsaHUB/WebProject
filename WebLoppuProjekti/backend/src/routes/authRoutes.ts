@@ -1,7 +1,11 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import prisma from "../../prisma/prisma";
+
+// Varmista että .env-tiedosto on ladattu
+dotenv.config();
 
 const router = Router();
 
@@ -84,9 +88,14 @@ router.post("/register", async (req, res) => {
     data: { email, passwordHash: hashedPassword },
   });
 
+  // Tarkista että JWT_SECRET on olemassa
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ error: "Server configuration error" });
+  }
+
   const token = jwt.sign(
     { userId: user.id },
-    process.env.JWT_SECRET as string,
+    process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 
@@ -144,9 +153,14 @@ router.post("/login", async (req, res) => {
   if (!isMatch)
     return res.status(401).json({ error: "Invalid email or password." });
 
+  // Tarkista että JWT_SECRET on olemassa
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ error: "Server configuration error" });
+  }
+
   const token = jwt.sign(
     { userId: user.id },
-    process.env.JWT_SECRET as string,
+    process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 
