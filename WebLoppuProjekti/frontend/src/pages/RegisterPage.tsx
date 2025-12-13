@@ -6,6 +6,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
@@ -15,8 +16,13 @@ export function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !userName) {
       setError("Kaikki kentät ovat pakollisia");
+      return;
+    }
+
+    if (userName.trim().length < 2) {
+      setError("Käyttäjänimen tulee olla vähintään 2 merkkiä pitkä");
       return;
     }
 
@@ -33,7 +39,7 @@ export function RegisterPage() {
     try {
       setLoading(true);
       setError(null);
-      await register(email, password);
+      await register(email, password, userName.trim());
       navigate("/"); // Redirect to home page after successful registration
     } catch (err) {
       setError(err instanceof Error ? err.message : "Rekisteröinti epäonnistui");
@@ -55,6 +61,21 @@ export function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Käyttäjänimi</span>
+              </label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                className="input input-bordered w-full"
+                required
+                minLength={2}
+                placeholder="Esim. Keittiömestarit"
+              />
+            </div>
+
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Sähköposti</span>

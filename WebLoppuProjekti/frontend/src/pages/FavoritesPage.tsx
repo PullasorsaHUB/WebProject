@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useFavorites } from "../hooks/useFavorites";
+import { useFavorites } from "../contexts/FavoritesContext";
 import { recipeApi, type Recipe } from "../api/recipes";
 import { RecipeCard } from "../components/RecipeCard";
 

@@ -8,6 +8,11 @@ export type Recipe = {
   instructions: string;
   imageUrl?: string;
   createdAt: string;
+  author?: {
+    id: number;
+    userName: string;
+    email: string;
+  };
 };
 
 export type CreateRecipeDto = Omit<Recipe, "id" | "createdAt">;

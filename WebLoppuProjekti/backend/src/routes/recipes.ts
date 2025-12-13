@@ -52,7 +52,16 @@ const router = Router();
 router.get("/", async (req: Request, res: Response) => {
     try{
         const recipes = await prisma.recipe.findMany({
-            orderBy: { createdAt: 'desc' }  // Uusimmat ensin
+            orderBy: { createdAt: 'desc' },  // Uusimmat ensin
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        userName: true,
+                        email: true
+                    }
+                }
+            }
         });
         res.json(recipes);
     }catch(error){
@@ -94,7 +103,18 @@ router.get("/:id", async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Invalid Id"});
     }
     try{
-        const recipe = await prisma.recipe.findUnique({ where: { id }});
+        const recipe = await prisma.recipe.findUnique({ 
+            where: { id },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        userName: true,
+                        email: true
+                    }
+                }
+            }
+        });
 
         if(!recipe){
             return res.status(404).json({ error: "Recipe not found"});

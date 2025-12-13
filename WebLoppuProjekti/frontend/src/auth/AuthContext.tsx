@@ -4,7 +4,7 @@ import { authApi, tokenStorage } from "../api/auth";
 type AuthContextType = {
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, userName: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -24,8 +24,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoggedIn(true);
   };
 
-  const register = async (email: string, password: string) => {
-    const response = await authApi.register(email, password);
+  const register = async (email: string, password: string, userName: string) => {
+    const response = await authApi.register(email, password, userName);
     tokenStorage.set(response.token);
     setIsLoggedIn(true);
   };

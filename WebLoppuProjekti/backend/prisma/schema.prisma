@@ -12,6 +12,8 @@ model Recipe {
   instructions  String
   imageUrl      String?
   createdAt     DateTime @default(now())
+  createdBy     Int?
+  author        User?    @relation("RecipeAuthor", fields: [createdBy], references: [id], onDelete: SetNull)
   favorites     Favorite[]
 }
 
@@ -22,6 +24,7 @@ model User {
   email         String    @unique
   createdAt     DateTime @default(now())
   favorites     Favorite[]
+  recipes       Recipe[]  @relation("RecipeAuthor")
 }
 
 model Favorite {

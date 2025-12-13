@@ -70,10 +70,13 @@ const router = Router();
  *         description: Email taken or validation error
  */
 router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, userName } = req.body;
 
   if (!email || !password)
     return res.status(400).json({ error: "Email and password are required." });
+
+  if (!userName || userName.trim().length < 2)
+    return res.status(400).json({ error: "Username is required and must be at least 2 characters." });
 
   if (password.length < 6)
     return res.status(400).json({ error: "Password must be at least 6 characters long." });
@@ -85,7 +88,7 @@ router.post("/register", async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await prisma.user.create({
-    data: { email, passwordHash: hashedPassword },
+    data: { email, userName: userName.trim(), passwordHash: hashedPassword },
   });
 
   // Tarkista että JWT_SECRET on olemassa
@@ -99,7 +102,7 @@ router.post("/register", async (req, res) => {
     { expiresIn: "7d" }
   );
 
-  return res.json({ token, user: { id: user.id, email: user.email } });
+  return res.json({ token, user: { id: user.id, email: user.email, userName: user.userName } });
 });
 
 /**
