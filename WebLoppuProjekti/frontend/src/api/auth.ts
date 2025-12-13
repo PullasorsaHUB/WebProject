@@ -5,6 +5,7 @@ export type AuthResponse = {
   user?: {
     id: number;
     email: string;
+    userName?: string;
   };
 };
 
@@ -16,14 +17,15 @@ export type LoginRequest = {
 export type RegisterRequest = {
   email: string;
   password: string;
+  userName: string;
 };
 
 export const authApi = {
   login: (email: string, password: string) =>
     apiPost<LoginRequest, AuthResponse>("/api/auth/login", { email, password }),
   
-  register: (email: string, password: string) =>
-    apiPost<RegisterRequest, AuthResponse>("/api/auth/register", { email, password }),
+  register: (email: string, password: string, userName: string) =>
+    apiPost<RegisterRequest, AuthResponse>("/api/auth/register", { email, password, userName }),
 };
 
 // Token management helpers

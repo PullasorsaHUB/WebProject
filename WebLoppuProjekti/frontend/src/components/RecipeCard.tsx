@@ -45,6 +45,9 @@ export function RecipeCard({ recipe }: Props) {
         {recipe.description && (
           <p className="text-sm opacity-70">{recipe.description}</p>
         )}
+        {recipe.author && (
+          <p className="text-xs opacity-60 italic">Tekijä: {recipe.author.userName}</p>
+        )}
         <div className="card-actions justify-end">
           <Link to={`/recipes/${recipe.id}`} className="btn btn-primary btn-sm">
             Näytä

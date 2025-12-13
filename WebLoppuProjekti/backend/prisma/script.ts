@@ -98,7 +98,7 @@ async function main() {
       description: 'Thai stir-fried noodles with sweet and tangy sauce.',
       ingredients: 'Rice noodles, shrimp, eggs, bean sprouts, peanuts, lime, fish sauce, palm sugar, tamarind paste',
       instructions: '1. Soak rice noodles until soft. 2. Make sauce with fish sauce, sugar, and tamarind. 3. Stir-fry shrimp and eggs. 4. Add noodles and sauce. 5. Toss with bean sprouts.',
-      imageUrl: 'https://images.unsplash.com/photo-1559314809-0f31657def5e?w=500'
+      imageUrl: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500'
     },
     {
       title: 'Caprese Salad',
@@ -116,23 +116,31 @@ async function main() {
     }
   ];
 
-  console.log('Creating recipes...');
-  for (const recipeData of recipes) {
-    const recipe = await prisma.recipe.create({ data: recipeData });
-    console.log(`Created recipe: ${recipe.title}`);
-  }
-
-  // Create test user
+  // Create test user first to get the userId
   console.log('Creating test user...');
   const hashedPassword = await bcrypt.hash('password123', 10);
   
   const user = await prisma.user.create({
     data: {
       email: 'test@test.com',
+      userName: 'TestiKokki',
       passwordHash: hashedPassword
     },
   })
-  console.log('Created user:', { id: user.id, email: user.email });
+  console.log('Created user:', { id: user.id, email: user.email, userName: user.userName });
+
+  console.log('Creating recipes...');
+  for (const recipeData of recipes) {
+    const recipe = await prisma.recipe.create({ 
+      data: {
+        ...recipeData,
+        createdBy: user.id // Lisää käyttäjä reseptin luojaksi
+      }
+    });
+    console.log(`Created recipe: ${recipe.title} by ${user.userName}`);
+  }
+
+
 
   // Fetch all recipes
   const allRecipes = await prisma.recipe.findMany({

@@ -136,6 +136,12 @@ export function RecipeDetailPage() {
             <p className="mt-3 text-base-content/80">{recipe.description}</p>
           ) : null}
 
+          {recipe.author && (
+            <p className="mt-2 text-sm text-base-content/60 italic">
+              Tekijä: {recipe.author.userName}
+            </p>
+          )}
+
           <div className="mt-6 space-y-4">
             <section>
               <h2 className="text-xl font-semibold mb-2">Ainesosat</h2>
