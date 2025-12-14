@@ -8,11 +8,14 @@ export function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, getCurrentUserId } = useAuth();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const currentUserId = getCurrentUserId();
+  const isOwner = recipe?.createdBy === currentUserId;
 
   useEffect(() => {
     const recipeId = Number(id);
@@ -124,15 +127,19 @@ export function RecipeDetailPage() {
                 }}
                 size="md"
               />
-              <Link
-                to={`/recipes/${recipe.id}/edit`}
-                className="btn btn-outline btn-sm"
-              >
-                Muokkaa
-              </Link>
-              <button className="btn btn-error btn-sm" onClick={handleDelete}>
-                Poista
-              </button>
+              {isOwner && (
+                <>
+                  <Link
+                    to={`/recipes/${recipe.id}/edit`}
+                    className="btn btn-outline btn-sm"
+                  >
+                    Muokkaa
+                  </Link>
+                  <button className="btn btn-error btn-sm" onClick={handleDelete}>
+                    Poista
+                  </button>
+                </>
+              )}
             </div>
           </div>
 

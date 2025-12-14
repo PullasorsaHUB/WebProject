@@ -230,11 +230,24 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
  *         description: Reseptiä ei löydy
  */
 
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
     const id = Number(req.params.id);
 
     if(isNaN(id)){
         return res.status(400).json({ error: "Invalid Id"});
+    }
+
+    // Tarkista että resepti on olemassa ja käyttäjä on sen tekijä
+    const existingRecipe = await prisma.recipe.findUnique({
+        where: { id }
+    });
+
+    if (!existingRecipe) {
+        return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    if (existingRecipe.createdBy !== req.user?.id) {
+        return res.status(403).json({ error: "You can only edit your own recipes" });
     }
 
     const { title, description, ingredients, instructions, imageUrl } = req.body;
@@ -291,11 +304,24 @@ router.put("/:id", async (req: Request, res: Response) => {
  *       404:
  *         description: Reseptiä ei löydy
  */
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
     const id = Number(req.params.id);
 
     if(isNaN(id)){
         return res.status(400).json({ error: "Invalid Id"});
+    }
+
+    // Tarkista että resepti on olemassa ja käyttäjä on sen tekijä
+    const existingRecipe = await prisma.recipe.findUnique({
+        where: { id }
+    });
+
+    if (!existingRecipe) {
+        return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    if (existingRecipe.createdBy !== req.user?.id) {
+        return res.status(403).json({ error: "You can only delete your own recipes" });
     }
     
     try{
