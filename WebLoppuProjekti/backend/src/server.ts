@@ -5,6 +5,7 @@ import swaggerUI from 'swagger-ui-express'; // Swagger UI
 import { swaggerSpec } from './swagger'; // Swaggerin konfiguraatio
 import recipesRouter from './routes/recipes'; // Reseptireitit
 import authRoutes from "./routes/authRoutes"; // Auth-reitit
+import favoritesRouter from './routes/favorite'; // Favoriittireitit
 
 
 // Lataa .env-tiedoston ympäristömmuutujat prosessiin
@@ -35,6 +36,9 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 
 // Reseptireitit
 app.use('/api/recipes', recipesRouter);
+
+// Suosikkitreitit
+app.use('/api', favoritesRouter);
 
 
 // Käynnistetään palvelin

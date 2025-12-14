@@ -13,6 +13,15 @@ const swaggerDefinitions = {
             description: 'Development server',
         },
     ],
+    components:{
+        securitySchemes:{
+            bearerAuth:{
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+            },
+        },
+    },
 };
 
 const options: swaggerJSDoc.Options = {
