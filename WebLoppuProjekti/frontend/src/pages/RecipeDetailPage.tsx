@@ -111,12 +111,16 @@ export function RecipeDetailPage() {
               <FavoriteButton
                 recipeId={recipe.id}
                 isFavorite={isFavorite(recipe.id)}
-                onToggle={(recipeId) => {
+                onToggle={async (recipeId) => {
                   if (!isLoggedIn) {
                     navigate("/login");
                     return;
                   }
-                  toggleFavorite(recipeId);
+                  try {
+                    await toggleFavorite(recipeId);
+                  } catch (error) {
+                    console.error("Virhe suosikin vaihdossa:", error);
+                  }
                 }}
                 size="md"
               />

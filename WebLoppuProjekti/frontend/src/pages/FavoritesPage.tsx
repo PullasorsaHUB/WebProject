@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { useFavorites } from "../contexts/FavoritesContext";
-import { recipeApi, type Recipe } from "../api/recipes";
+import { favoritesApi, type FavoriteWithRecipe } from "../api/favorites";
 import { RecipeCard } from "../components/RecipeCard";
+import { useAuth } from "../auth/AuthContext";
 
 export function FavoritesPage() {
-  const { favoriteIds } = useFavorites();
-  const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteWithRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    const fetchFavoriteRecipes = async () => {
-      if (favoriteIds.length === 0) {
+    const fetchFavorites = async () => {
+      if (!isLoggedIn) {
         setFavoriteRecipes([]);
         setLoading(false);
         return;
@@ -20,13 +20,7 @@ export function FavoritesPage() {
       try {
         setLoading(true);
         setError(null);
-        
-        // Hae kaikki reseptit ja suodata suosikit
-        const allRecipes = await recipeApi.getAll();
-        const favorites = allRecipes.filter(recipe => 
-          favoriteIds.includes(recipe.id)
-        );
-        
+        const favorites = await favoritesApi.getMyFavorites();
         setFavoriteRecipes(favorites);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Virhe suosikkien haussa");
@@ -35,8 +29,8 @@ export function FavoritesPage() {
       }
     };
 
-    fetchFavoriteRecipes();
-  }, [favoriteIds]);
+    fetchFavorites();
+  }, [isLoggedIn]);
 
   if (loading) {
     return (
@@ -55,6 +49,17 @@ export function FavoritesPage() {
         <h1 className="text-3xl font-bold mb-6">Suosikit</h1>
         <div className="alert alert-error">
           <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Suosikit</h1>
+        <div className="alert alert-warning">
+          <span>Kirjaudu sisään nähdäksesi suosikkisi.</span>
         </div>
       </div>
     );
@@ -80,8 +85,8 @@ export function FavoritesPage() {
       </h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {favoriteRecipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+        {favoriteRecipes.map((favorite) => (
+          <RecipeCard key={favorite.recipe.id} recipe={favorite.recipe} />
         ))}
       </div>
     </div>
