@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-const FAVORITES_STORAGE_KEY = "simplechef-favorites";
+import { favoritesApi } from "../api/favorites";
+import { useAuth } from "../auth/AuthContext";
 
 type FavoritesContextType = {
   favoriteIds: number[];
   isFavorite: (recipeId: number) => boolean;
-  addToFavorites: (recipeId: number) => void;
-  removeFromFavorites: (recipeId: number) => void;
-  toggleFavorite: (recipeId: number) => void;
+  addToFavorites: (recipeId: number) => Promise<void>;
+  removeFromFavorites: (recipeId: number) => Promise<void>;
+  toggleFavorite: (recipeId: number) => Promise<void>;
+  loading: boolean;
+  refreshFavorites: () => Promise<void>;
 };
 
 const FavoritesContext = createContext<FavoritesContextType | null>(null);
@@ -18,30 +20,32 @@ type Props = {
 
 export function FavoritesProvider({ children }: Props) {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { isLoggedIn } = useAuth();
 
-  // Lataa suosikit localStorage:sta
-  useEffect(() => {
+  // Lataa suosikit backendistä kun käyttäjä on kirjautunut
+  const refreshFavorites = async () => {
+    if (!isLoggedIn) {
+      setFavoriteIds([]);
+      return;
+    }
+
     try {
-      const stored = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setFavoriteIds(Array.isArray(parsed) ? parsed : []);
-      }
+      setLoading(true);
+      const favorites = await favoritesApi.getMyFavorites();
+      const ids = favorites.map(fav => fav.recipeId);
+      setFavoriteIds(ids);
     } catch (error) {
       console.error("Virhe suosikkien lataamisessa:", error);
       setFavoriteIds([]);
-    }
-  }, []);
-
-  // Tallenna suosikit localStorage:iin
-  const saveFavorites = (ids: number[]) => {
-    try {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(ids));
-      setFavoriteIds(ids);
-    } catch (error) {
-      console.error("Virhe suosikkien tallentamisessa:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    refreshFavorites();
+  }, [isLoggedIn]);
 
   // Tarkista onko resepti suosikki
   const isFavorite = (recipeId: number): boolean => {
@@ -49,25 +53,37 @@ export function FavoritesProvider({ children }: Props) {
   };
 
   // Lisää suosikkeihin
-  const addToFavorites = (recipeId: number) => {
-    if (!isFavorite(recipeId)) {
-      const newFavorites = [...favoriteIds, recipeId];
-      saveFavorites(newFavorites);
+  const addToFavorites = async (recipeId: number) => {
+    if (!isLoggedIn || isFavorite(recipeId)) return;
+    
+    try {
+      await favoritesApi.addFavorite(recipeId);
+      setFavoriteIds(prev => [...prev, recipeId]);
+    } catch (error) {
+      console.error("Virhe suosikin lisäämisessä:", error);
+      throw error;
     }
   };
 
   // Poista suosikeista
-  const removeFromFavorites = (recipeId: number) => {
-    const newFavorites = favoriteIds.filter(id => id !== recipeId);
-    saveFavorites(newFavorites);
+  const removeFromFavorites = async (recipeId: number) => {
+    if (!isLoggedIn || !isFavorite(recipeId)) return;
+    
+    try {
+      await favoritesApi.removeFavorite(recipeId);
+      setFavoriteIds(prev => prev.filter(id => id !== recipeId));
+    } catch (error) {
+      console.error("Virhe suosikin poistamisessa:", error);
+      throw error;
+    }
   };
 
   // Vaihda suosikki-status
-  const toggleFavorite = (recipeId: number) => {
+  const toggleFavorite = async (recipeId: number) => {
     if (isFavorite(recipeId)) {
-      removeFromFavorites(recipeId);
+      await removeFromFavorites(recipeId);
     } else {
-      addToFavorites(recipeId);
+      await addToFavorites(recipeId);
     }
   };
 
@@ -79,6 +95,8 @@ export function FavoritesProvider({ children }: Props) {
         addToFavorites,
         removeFromFavorites,
         toggleFavorite,
+        loading,
+        refreshFavorites,
       }}
     >
       {children}

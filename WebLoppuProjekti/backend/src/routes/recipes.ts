@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import  prisma  from "../../prisma/prisma";   // <-- tärkeä
+import { authMiddleware, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
@@ -133,6 +134,8 @@ router.get("/:id", async (req: Request, res: Response) => {
  *   post:
  *     summary: Luo uusi resepti
  *     tags: [Recipes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -148,10 +151,17 @@ router.get("/:id", async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Recipe'
  *       400:
  *         description: Virheellinen syöte
+ *       401:
+ *         description: Ei valtuutusta
  */
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
     const { title, description, ingredients, instructions, imageUrl } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
 
     // Validointi: title, ingredients, instruction pakollisia
     if(
@@ -172,7 +182,17 @@ router.post("/", async (req: Request, res: Response) => {
                 description,
                 ingredients,
                 instructions,
-                imageUrl
+                imageUrl,
+                createdBy: userId
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        userName: true,
+                        email: true
+                    }
+                }
             }
         });
         res.status(201).json(newRecipe);
