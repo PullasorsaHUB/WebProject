@@ -100,6 +100,15 @@ npm run dev
 
 Frontend käynnistyy osoitteeseen `http://localhost:5173`.
 
+## Testikäyttäjä
+
+Sovelluksessa on valmiiksi luotu testikäyttäjä, jolla voit kokeilla kaikkia toimintoja:
+
+**Sähköposti:** `test@test.com`  
+**Salasana:** `password123`
+
+Voit myös rekisteröidä uuden käyttäjän sovelluksen rekisteröintisivulla.
+
 ## API-dokumentaatio
 
 Swagger-pohjainen API-dokumentaatio on saatavilla osoitteessa:
