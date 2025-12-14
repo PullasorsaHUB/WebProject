@@ -13,7 +13,7 @@ const router = Router();
  * @swagger
  * tags:
  *   name: Auth
- *   description: User authentication
+ *   description: Käyttäjän autentikointi
  */
 
 /**
@@ -31,8 +31,8 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     tags: [Auth]
- *     summary: Register a new user
- *     description: Creates a new user, hashes password, and returns a JWT token.
+ *     summary: Rekisteröi uusi käyttäjä
+ *     description: Luo uuden käyttäjän, salaa salasanan ja palauttaa JWT-tokenin.
  *     requestBody:
  *       required: true
  *       content:
@@ -42,16 +42,20 @@ const router = Router();
  *             required:
  *               - email
  *               - password
+ *               - userName
  *             properties:
  *               email:
  *                 type: string
- *                 example: user@example.com
+ *                 example: käyttäjä@esimerkki.fi
  *               password:
  *                 type: string
- *                 example: secret123
+ *                 example: salasana123
+ *               userName:
+ *                 type: string
+ *                 example: MattMeikä
  *     responses:
- *       200:
- *         description: User successfully registered
+ *       201:
+ *         description: Käyttäjä rekisteröity onnistuneesti
  *         content:
  *           application/json:
  *             schema:
@@ -59,15 +63,21 @@ const router = Router();
  *               properties:
  *                 token:
  *                   type: string
+ *                   description: JWT-token
  *                 user:
  *                   type: object
  *                   properties:
  *                     id:
  *                       type: integer
+ *                       description: Käyttäjän ID
  *                     email:
  *                       type: string
+ *                       description: Sähköpostiosoite
+ *                     userName:
+ *                       type: string
+ *                       description: Käyttäjänimi
  *       400:
- *         description: Email taken or validation error
+ *         description: Sähköposti käytössä tai validointivirhe
  */
 router.post("/register", async (req, res) => {
   const { email, password, userName } = req.body;
@@ -110,8 +120,8 @@ router.post("/register", async (req, res) => {
  * /api/auth/login:
  *   post:
  *     tags: [Auth]
- *     summary: Login a user
- *     description: Validates credentials and returns a JWT token.
+ *     summary: Kirjaudu sisään
+ *     description: Tarkistaa tunnukset ja palauttaa JWT-tokenin.
  *     requestBody:
  *       required: true
  *       content:
@@ -124,13 +134,13 @@ router.post("/register", async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
- *                 example: user@example.com
+ *                 example: käyttäjä@esimerkki.fi
  *               password:
  *                 type: string
- *                 example: secret123
+ *                 example: salasana123
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Kirjautuminen onnistui
  *         content:
  *           application/json:
  *             schema:
@@ -138,8 +148,21 @@ router.post("/register", async (req, res) => {
  *               properties:
  *                 token:
  *                   type: string
+ *                   description: JWT-token
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: Käyttäjän ID
+ *                     email:
+ *                       type: string
+ *                       description: Sähköpostiosoite
+ *                     userName:
+ *                       type: string
+ *                       description: Käyttäjänimi
  *       401:
- *         description: Invalid email or password
+ *         description: Virheellinen sähköposti tai salasana
  */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;

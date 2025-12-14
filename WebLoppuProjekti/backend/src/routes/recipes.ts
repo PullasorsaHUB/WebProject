@@ -11,7 +11,7 @@ const router = Router();
  *     Recipe:
  *       type: object
  *       required:
- *         - titleS
+ *         - title
  *         - ingredients
  *         - instructions
  *       properties:
@@ -29,6 +29,19 @@ const router = Router();
  *         imageUrl:
  *           type: string
  *           nullable: true
+ *         createdBy:
+ *           type: integer
+ *           nullable: true
+ *         author:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             id:
+ *               type: integer
+ *             userName:
+ *               type: string
+ *             email:
+ *               type: string
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -39,10 +52,10 @@ const router = Router();
  * /api/recipes:
  *   get:
  *     summary: Hae kaikki reseptit
- *     tags: [Recipes]
+ *     tags: [Reseptit]
  *     responses:
  *       200:
- *         description: Lista resepteistä
+ *         description: Lista kaikista resepteistä
  *         content:
  *           application/json:
  *             schema:
@@ -75,26 +88,26 @@ router.get("/", async (req: Request, res: Response) => {
  * @swagger
  * /api/recipes/{id}:
  *   get:
- *     summary: Hae resepti id:n perusteella
- *     tags: [Recipes]
+ *     summary: Hae yksittäinen resepti
+ *     tags: [Reseptit]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Reseptin id
+ *         description: Reseptin tunniste
  *     responses:
  *       200:
- *         description: Yksittäinen resepti
+ *         description: Reseptin tiedot
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Recipe'
  *       400:
- *         description: Virheellinen id
+ *         description: Virheellinen tunniste
  *       404:
- *         description: Reseptiä ei löydy
+ *         description: Reseptiä ei löydetty
  */
 
 router.get("/:id", async (req: Request, res: Response) => {
@@ -133,7 +146,7 @@ router.get("/:id", async (req: Request, res: Response) => {
  * /api/recipes:
  *   post:
  *     summary: Luo uusi resepti
- *     tags: [Recipes]
+ *     tags: [Reseptit]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -207,7 +220,9 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
  * /api/recipes/{id}:
  *   put:
  *     summary: Päivitä resepti
- *     tags: [Recipes]
+ *     tags: [Reseptit]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -226,6 +241,10 @@ router.post("/", authMiddleware, async (req: AuthRequest, res: Response) => {
  *         description: Päivitetty resepti
  *       400:
  *         description: Virheellinen syöte tai id
+ *       401:
+ *         description: Ei valtuutusta
+ *       403:
+ *         description: Ei oikeutta muokata tätä reseptiä
  *       404:
  *         description: Reseptiä ei löydy
  */
@@ -288,7 +307,9 @@ router.put("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
  * /api/recipes/{id}:
  *   delete:
  *     summary: Poista resepti
- *     tags: [Recipes]
+ *     tags: [Reseptit]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -301,6 +322,10 @@ router.put("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
  *         description: Poistettu
  *       400:
  *         description: Virheellinen id
+ *       401:
+ *         description: Ei valtuutusta
+ *       403:
+ *         description: Ei oikeutta poistaa tätä reseptiä
  *       404:
  *         description: Reseptiä ei löydy
  */
