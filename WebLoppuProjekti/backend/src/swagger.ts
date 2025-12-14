@@ -5,12 +5,12 @@ const swaggerDefinitions = {
     info: {
         title: 'SimpleChef API',
         version: '1.0.0',
-        description: 'SimpleChef reseptisovelluksen API-dokumentaatio',
+        description: 'SimpleChef reseptisovelluksen REST API -dokumentaatio. Kaikki autentikointia vaativat reitit käyttävät JWT Bearer -tokenia.',
     },
     servers:[
         {
             url: 'http://localhost:3000',
-            description: 'Development server',
+            description: 'Kehityspalvelin (localhost)',
         },
     ],
     components:{

@@ -7,8 +7,8 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   name: Favorites
- *   description: User favorites management
+ *   name: Suosikit
+ *   description: Käyttäjän suosikkien hallinta
  */
 
 /**
@@ -36,7 +36,7 @@ const router = Router();
  * /api/recipes/{id}/favorite:
  *   post:
  *     summary: Lisää resepti suosikkeihin
- *     tags: [Favorites]
+ *     tags: [Suosikit]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -45,10 +45,10 @@ const router = Router();
  *         schema:
  *           type: integer
  *         required: true
- *         description: Reseptin id
+ *         description: Reseptin tunniste
  *     responses:
  *       200:
- *         description: Resepti lisätty suosikkeihin
+ *         description: Resepti lisätty suosikkeihin onnistuneesti
  *         content:
  *           application/json:
  *             schema:
@@ -56,14 +56,15 @@ const router = Router();
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: "Recipe favorited successfully"
  *       400:
- *         description: Virheellinen id
+ *         description: Virheellinen tunniste
  *       401:
- *         description: Ei kirjautunut
+ *         description: Kirjautuminen vaaditaan
  *       404:
- *         description: Reseptiä ei löydy
+ *         description: Reseptiä ei löydetty
  *       500:
- *         description: Palvelinvirhe
+ *         description: Sisäinen palvelinvirhe
  */
 router.post(
     "/recipes/:id/favorite",
@@ -123,7 +124,7 @@ router.post(
  * /api/recipes/{id}/favorite:
  *   delete:
  *     summary: Poista resepti suosikeista
- *     tags: [Favorites]
+ *     tags: [Suosikit]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -132,16 +133,16 @@ router.post(
  *         schema:
  *           type: integer
  *         required: true
- *         description: Reseptin id
+ *         description: Reseptin tunniste
  *     responses:
  *       204:
- *         description: Resepti poistettu suosikeista
+ *         description: Resepti poistettu suosikeista onnistuneesti
  *       400:
- *         description: Virheellinen id
+ *         description: Virheellinen tunniste
  *       401:
- *         description: Ei kirjautunut
+ *         description: Kirjautuminen vaaditaan
  *       404:
- *         description: Suosikkia ei löydy
+ *         description: Suosikkia ei löydetty
  */
 router.delete(
     "/recipes/:id/favorite",
@@ -184,12 +185,12 @@ router.delete(
  * /api/users/me/favorites:
  *   get:
  *     summary: Hae omat suosikit
- *     tags: [Favorites]
+ *     tags: [Suosikit]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista käyttäjän suosikeista
+ *         description: Lista kirjautuneen käyttäjän suosikeista
  *         content:
  *           application/json:
  *             schema:
@@ -197,9 +198,9 @@ router.delete(
  *               items:
  *                 $ref: '#/components/schemas/Favorite'
  *       401:
- *         description: Ei kirjautunut
+ *         description: Kirjautuminen vaaditaan
  *       500:
- *         description: Palvelinvirhe
+ *         description: Sisäinen palvelinvirhe
  */
 router.get(
     "/users/me/favorites",
